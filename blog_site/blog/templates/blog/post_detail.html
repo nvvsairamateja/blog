@@ -1,0 +1,55 @@
+{% extends "blog/base.html" %}
+{% block content %}
+
+<article class="content-section p-3 mb-4 border rounded shadow-sm bg-white position-relative">
+
+    <!-- Author Section -->
+    <div class="d-flex align-items-center mb-2">
+        <img class="rounded-circle article-img me-2" src="{{ object.author.profile.image.url }}" 
+            alt="{{ object.author.username }}">
+        <div>
+            <a class="author-link fw-bold text-decoration-none" href="{% url 'user-posts' object.author.username %}">{{ object.author }}</a>
+            <br>
+            <small class="text-body-secondary">{{ object.date_posted|date:"F d, Y" }}</small>
+        </div>
+        
+        <!-- Buttons Positioned in Top-Right -->
+        {% if object.author == user %}
+        <div class="ms-auto">
+            <a class="btn btn-sm btn-outline-secondary me-1" href="{% url 'post-update' object.id %}">
+                <i class="bi bi-pencil"></i> Update
+            </a>
+            <a class="btn btn-sm btn-outline-danger" href="{% url 'post-delete' object.id %}">
+                <i class="bi bi-trash"></i> Delete
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Article Content -->
+    <h4 class="article-title text-dark text-decoration-none">{{ object.title }}</h4>
+    <p class="article-content">{{ object.content }}</p>
+
+</article>
+
+
+<!-- <article class="content-section p-3 mb-4 border rounded shadow-sm bg-white">
+
+    <div class="d-flex align-items-center mb-2">
+        <img class="rounded-circle article-img me-2" src="{{ object.author.profile.image.url }}"
+            alt="{{ object.author.username }}">
+        <div>
+            <a class="author-link fw-bold text-decoration-none" href="#">{{ object.author }}</a>
+            <br>
+            <small class="text-body-secondary">{{ object.date_posted|date:"F d, Y" }}</small>
+            {% if object.author == user%}
+            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-update' object.id %}"> Update</a>
+            <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'post-delete' object.id %}"> Delete</a>
+            {% endif %}
+        </div>
+    </div>
+    <h4 class="article-title text-dark text-decoration-none">{{ object.title }}
+    </h4>
+    <p class="article-content">{{ object.content }}</p>
+</article> -->
+{% endblock content %}
