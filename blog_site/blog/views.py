@@ -1,6 +1,9 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Post
+from .forms import CommentForm
 from django.contrib.auth.models import User
 from django.views.generic import (
     ListView,
@@ -76,3 +79,28 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 def about(request):
     return render(request, "blog/about.html", {"title": "About"})
+
+
+def post_detail(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+
+    if request.method == "POST":
+        if not request.user.is_authenticated:
+            messages.warning(request, 'Login to comment')
+            login_url = f"{reverse('login')}?next={request.path}"
+            return redirect(login_url)
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.on_post = post
+            comment.commented_by = request.user
+            comment.save()
+            return redirect("post-detail", pk=post.pk)
+    else:
+        form = CommentForm()
+    comments = post.comments.all()
+    return render(
+        request,
+        "blog/post_detail.html",
+        {"object": post, "form": form, "comments": comments},
+    )
